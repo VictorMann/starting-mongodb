@@ -1,0 +1,8 @@
++--
+Apos baixar e installar o MongoDB
+Ao abrirmos a pasta do "mongodb" teremos dentro uma pasta do diretório "bin". Dentro desta pasta temos um arquivo para o servidor, o "mongod", e um arquivo para o cliente, o "mongo".
+
+O MongoDB já define um diretório padrão para seu banco, mais você pode mudar tal com o seguinte comando:
+
+> mongod --dbpath /seu/diretorio/desejado/db
+=--
