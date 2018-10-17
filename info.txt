@@ -6,3 +6,32 @@ O MongoDB já define um diretório padrão para seu banco, mais você pode mudar
 
 > mongod --dbpath /seu/diretorio/desejado/db
 =--
+
++--
+Criando e inserindo em uma coleção
+
+> db.createCollection("alunos")
+> db.alunos.insert({
+    "nome" : "Felipe", 
+    "data_nascimento" : new Date (1994,02,26)
+})
+// outra inserção
+> db.alunos.insert({
+    "nome": "Felipe",
+    "data_nascimento": new Date(1994, 02, 26),
+    "curso": {
+        "nome": "Sistemas de informação"
+    },
+    "notas": [10.0, 9.0, 4.5],
+    "habilidades": [{
+        "nome": "inglês",
+        "nível": "avançado"
+    }, {
+        "nome": "taekwondo",
+        "nível": "básico"
+    }]
+})
+
+Se quisermos conferir o que foi inserido:
+> db.alunos.find()
+=--
