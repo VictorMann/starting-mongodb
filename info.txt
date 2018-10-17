@@ -44,3 +44,41 @@ nesse caso estamos removendo pelo id:
     "_id": ObjectId ("56cb0002b6d75ec12f75d3b5")
 })
 =--
+
++--
+Para conseguirmos ler de uma forma mais clara:
+
+> db.alunos.find().pretty()
+=--
+
++--
+Consulta AND, OR e iIN
+
+// AND
+db.alunos.find({
+    "nome" : "Felipe",
+    "habilidades.nome" : "inglês"
+})
+
+// OR
+db.alunos.find({
+    $or : [
+        {"curso.nome" : "Sistemas de informação"},
+        {"curso.nome" : "Engenharia Química"}    
+    ]
+})
+// OR e AND
+db.alunos.find({
+    $or : [
+        {"curso.nome" : "Sistemas de informação"},
+        {"curso.nome" : "Engenharia Química"}    
+    ],
+    "nome" : "Daniela"
+})
+
+// IN
+db.alunos.find({
+    "curso.nome": {
+        $in : ["Sistema de informação", "Engenharia Química"]
+    }
+})
