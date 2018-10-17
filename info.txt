@@ -35,3 +35,12 @@ Criando e inserindo em uma coleção
 Se quisermos conferir o que foi inserido:
 > db.alunos.find()
 =--
+
++--
+Removendo elementos
+
+nesse caso estamos removendo pelo id:
+> db.alunos.remove({
+    "_id": ObjectId ("56cb0002b6d75ec12f75d3b5")
+})
+=--
