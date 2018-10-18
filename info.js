@@ -153,3 +153,104 @@ db.alunos.find().sort({"nome" : -1})    // decrescente
 
 // definindo um limit de registros
 db.alunos.find().sort({"nome" : 1}).limit(3)
+
+
+// Importando arquivos
+// mongoimport -c alunos --jsonArray < alunos.json
+// -c            : collection
+// --jsonArray   : um array de json
+// < alunos.json : indica o arquivo
+
+// busca de proximidade
+/**
+ * Vamos utilizar o aggregate, para agregar um conjunto de dados. 
+ * Passaremos um dicionário que deve ter alguns parâmetros, o primeiro é 
+ * o tipo de busca que queremos fazer, como é uma procura por proximidade
+ * usaremos o $geoNear. O segundo parâmetro é o near que indica que 
+ * queremos aquilo que esteja próximo a uma coordenada específica. 
+ * Por fim, passaremos também as coordinates (longitude e latitude)
+ * e o type que no caso é "Point". Para conferir as coordenadas de
+ * alguém podemos fazer a consulta no material já preparado, 
+ * o "alunos.json".
+ * Temos que passar ao MongoDB que ele deve realizar essa busca procurando 
+ * o campo localização. Então, temos que criar um índice de busca, o 
+ * db.alunos.createIndex() e nele passaremos o campo localização que 
+ * possui uma estrutura de "ponto", com latitude e longitude. Na verdade,
+ * a chave localização deve ser indexada para uma busca em uma esfera 2d,
+ *  pois contam apenas duas dimensões. Teremos o seguinte em nosso Editor:
+ * 
+ */
+db.alunos.aggregate([
+{
+    $geoNear : {
+        near : {
+            coordinates: [-23.5640265, -46.6527128],
+            type : "Point"
+        }
+
+    }
+}
+])
+
+db.alunos.createIndex({
+    localizacao : "2dsphere"
+})
+
+/**
+ * Executaremos o db.alunos.createIndex no Terminal e ele irá criar um índice. 
+ * Agora, precisamos mostrar como calcular a distância entre esses dois pontos. 
+ * Teremos que falar ao $geoNear que a forma é spherical : true, ou seja, que a 
+ * comparação não deve ser entre as distâncias de uma linha, e sim, de uma esfera. 
+ * Além disso, temos que falar o que deve ser feito com a distância, então, temos 
+ * que criar o campo distanceField : "distance.calculada". Teremos o seguinte:
+ */
+db.alunos.aggregate([
+{
+    $geoNear : {
+        near : {
+            coordinates: [-23.5640265, -46.6527128],
+            type : "Point"
+        },
+        distanceField : "distancia.calculada",
+        spherical : true
+    }
+}
+])
+/**
+ * Rodando isso no Terminal ele nos traz todos os alunos:
+ * Repare que o primeiro ponto mostrado é aquele que está mais próximo
+ * e é o próprio Marcelo. O segundo mais próximo é "Sofia" e assim por 
+ * diante. Foi ordenado do mais próximo para o mais distante e isso é 
+ * medido através da distância entre dois pontos. O primeiro ponto é a 
+ * coordenada que estamos passando e o segundo é o índice que criamos.
+ * 
+ * Podemos pedir para que apenas 4 pontos sejam trazidos através do 
+ * num : 3. Agora que sabemos como buscar pontos vamos aprender a ignorar 
+ * o primeiro ponto que é o próprio "Marcelo". Vamos adicionar ao 
+ * db.alunos.aggregate o num : 4 e para pular um, skip : 1.
+ */
+db.alunos.aggregate([
+{
+    $geoNear : {
+        near : {
+            coordinates: [-23.5640265, -46.6527128],
+            type : "Point"
+        },
+        distanceField : "distancia.calculada",
+        spherical : true,
+        num : 4
+    }
+},
+{ $skip :1 }
+])
+/**
+ * E, agora, ele terá ignorado o próprio ponto "Marcelo" e mostrado 
+ * os outros três mais próximos. Por isso, nos é mostrado apenas 
+ * três alunos. No final é como se ele não mostrasse 4 elementos, 
+ * mas sim 4 - 1:
+ * 
+ * Se quisermos pegar outro aluno para testarmos basta passar as 
+ * coordenadas desse aluno ao campo coordinates. É assim que buscamos 
+ * por proximidade.
+ */
+    
