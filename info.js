@@ -75,3 +75,81 @@ db.alunos.find({
         $in : ["Sistema de informação", "Engenharia Química"]
     }
 })
+
+// UPDATE
+
+// realiza a total troca do conteudo não apenas
+// aquele atributo específico
+db.alunos.update(
+    // registro buscado
+    {"_id": ObjectId ("56cb0002b6d75ec12f75d3b5")},
+    {"nome" : "Marcos"}
+)
+
+// $set permite mudar um registro específico
+db.alunos.update(
+    {"nome": "Felipe"},
+    {
+        $set: {
+            "curso.nome": "Medicina"
+        }
+    }
+)
+// para mudar multiplos registros
+db.alunos.update(
+    {"nome": "Felipe"},
+    {
+        $set: {
+            "curso.nome": "Medicina"
+        }
+    },
+    {multi: true}
+)
+
+// UPDATE com operadores de array
+{
+    "_id": ObjectId("56cb0002b6d75ec12f75d3b5"),
+    "nome": "Felipe",
+    "notas": [4, 7, 4.5]
+}
+
+// $push : adiciona um elemento no array
+db.alunos.update(
+    {"_id": ObjectId("56cb0002b6d75ec12f75d3b5")},
+    {
+        $push: {
+            "notas": 8.5
+        }
+    }
+)
+//> "notas": [4, 7, 4.5, 8.5]
+
+// $push c/ $each : adiciona mais de um elemento no array
+db.alunos.update(
+    {"_id": ObjectId("56cb0002b6d75ec12f75d3b5")},
+    {
+        $push: {
+            "notas": { $each: [8.5, 3] }
+        }
+    }
+)
+//> "notas": [4, 7, 4.5, 8.5, 8.5, 3]
+
+
+// busca "maior que" (>)
+db.alunos.find({
+    notas : { $gt : 5 }
+})
+
+// busca o 1° que encontrar
+// traz apenas um registro
+db.alunos.findOne({
+    notas : { $gt : 5 }
+})
+
+// busca ordenada 1 e -1
+db.alunos.find().sort({"nome" : 1})     // crescente
+db.alunos.find().sort({"nome" : -1})    // decrescente
+
+// definindo um limit de registros
+db.alunos.find().sort({"nome" : 1}).limit(3)
